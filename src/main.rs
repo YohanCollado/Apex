@@ -1,23 +1,39 @@
+mod command;
 mod store;
 
+use command::Command;
 use store::Store;
 
-fn main() {
+fn main(){
     let mut store = Store::new();
 
-    store.put("name".to_string(), "Yohan".to_string());
-    store.put("project".to_string(), "Apex".to_string());
+    let put_name = Command::Put{
+        key: "name".to_string(),
+        value: "Yohan".to_string(),
+    };
 
-    if let Some(value) = store.get("name"){
-        println!("name = {}", value);
+    let put_project = Command::Put{
+        key: "project".to_string(),
+        value: "Apex".to_string(),
+    };
+
+    let delete_project = Command::Delete{
+        key: "project".to_string(),
+    };
+
+    store.apply(put_name);
+    store.apply(put_project);
+
+    if let Some(value) = store.get("name") {
+        println!("name = {}", value)
     } else {
-        println!("name not found");
+        println!("name not found")
     }
 
-    //store.delete("project");
+    store.apply(delete_project);
 
     if let Some(value) = store.get("project") {
-        println!("project = {}", value);
+        println!("project = {}", value)
     } else {
         println!("project not found")
     }
