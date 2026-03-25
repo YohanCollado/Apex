@@ -1,0 +1,20 @@
+#Rust
+/target/
+Cargo.lock
+
+#Env
+.env
+
+#OS
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
+
+# Added by cargo
+
+/target
