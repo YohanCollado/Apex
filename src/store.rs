@@ -33,7 +33,7 @@ impl Store {
 mod test {
     use super::*;
     use crate::command::Command;
-    use crate::error::StoreError;
+    //use crate::error::StoreError;
 
     #[test]
     fn tests_apply_put(){
