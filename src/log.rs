@@ -72,7 +72,7 @@ mod test {
         let mut log = ReplicatedLog::new();
 
         log.append(Command::Put {
-            key: "Name".to_string(),
+            key: "name".to_string(),
             value: "Yohan".to_string(),
         });
 
@@ -83,7 +83,7 @@ mod test {
             Some(&LogEntry {
                 index: 1,
                 command: Command::Put {
-                    key: "Name".to_string(),
+                    key: "name".to_string(),
                     value: "Yohan".to_string(),
                 },
             })

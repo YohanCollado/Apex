@@ -1,48 +1,49 @@
-mod store;
-mod log;
-mod error;
 mod command;
+mod error;
+mod log;
+mod node;
+mod store;
 
 use command::Command;
-use log::ReplicatedLog;
-use store::Store;
+use node::ApexNode;
 
 fn main() {
-    let mut store = Store::new();
-    let mut log = ReplicatedLog::new();
+    let mut node = ApexNode::new();
 
-    let index1 = log.append(Command::Put {
-        key: "Name".to_string(),
+    match node.apply_command(Command::Put {
+        key: "name".to_string(),
         value: "Yohan".to_string(),
-    });
-
-    let index2 = log.append(Command::Put {
-        key: "Project".to_string(),
-        value: "Apex".to_string(),
-    });
-
-    let index3 = log.append(Command::Delete {
-        key: "Project".to_string(),
-    });
-
-    println!("Append entries at index: {}, {}, {}", index1, index2, index3);
-
-    for entry in log.entries() {
-        match store.apply(entry.command.clone()) {
-            Ok(_) => println!("Applied entry at index {}", entry.index),
-            Err(error) => println! ("Failed to apply entry at index {}: {:?}", entry.index, error),
-        }
+    }) {
+        Ok(index) => println!("Put command appended and applied at log index {}", index),
+        Err(error) => println!("Error applying put command: {:?}", error),
     }
 
-    if let Some(value) = store.get("Name") {
+    match node.apply_command(Command::Put {
+        key: "project".to_string(),
+        value: "Apex".to_string(),
+    }) {
+        Ok(index) => println!("Put command appended and applied at log index {}", index),
+        Err(error) => println!("Error applying put command: {:?}", error),
+    }
+
+    match node.apply_command(Command::Delete {
+        key: "project".to_string(),
+    }) {
+        Ok(index) => println!("Delete command appended and applied at log index {}.", index),
+        Err(error) => println!("Error applying delete command: {:?}", error),
+    }
+
+    if let Some(value) = node.get("name") {
         println!("Name = {}", value);
     } else {
-        println!("Name was not found")
+        println!("Name not found")
     }
-
-    if let Some(value) = store.get("Project") {
+        
+    if let Some(value) = node.get("project") {
         println!("Project = {}", value);
     } else {
         println!("Project was not found")
     }
+
+    println!("Last log index = {}", node.last_log_index());
 }

@@ -72,5 +72,6 @@ mod test {
         let result = store.apply(Command::Delete {
             key: "missing".to_string(),
         });
+        assert_eq!(result, Err(StoreError::KeyNotFound("missing".to_string())));
     }
 }   
