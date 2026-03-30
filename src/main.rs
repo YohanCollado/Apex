@@ -4,47 +4,72 @@ mod log;
 mod node;
 mod store;
 
-use command::Command;
 use node::ApexNode;
+use std::io::{self, Write};
 
 fn main() {
     let mut node = ApexNode::new();
+    let mut input = String::new();
 
-    match node.apply_command(Command::Put {
-        key: "name".to_string(),
-        value: "Yohan".to_string(),
-    }) {
-        Ok(index) => println!("Put command appended and applied at log index {}", index),
-        Err(error) => println!("Error applying put command: {:?}", error),
-    }
+    println!("Apex");
+    
+    loop {
+        input.clear();
 
-    match node.apply_command(Command::Put {
-        key: "project".to_string(),
-        value: "Apex".to_string(),
-    }) {
-        Ok(index) => println!("Put command appended and applied at log index {}", index),
-        Err(error) => println!("Error applying put command: {:?}", error),
-    }
+        print!("> ");
+        io::stdout().flush().unwrap();
 
-    match node.apply_command(Command::Delete {
-        key: "project".to_string(),
-    }) {
-        Ok(index) => println!("Delete command appended and applied at log index {}.", index),
-        Err(error) => println!("Error applying delete command: {:?}", error),
-    }
+        io::stdin().read_line(&mut input).unwrap();
 
-    if let Some(value) = node.get("name") {
-        println!("Name = {}", value);
-    } else {
-        println!("Name not found")
-    }
+        let command = input.trim().to_lowercase();
+
+        if command == "exit"{
+            println!("Bye Bye... See you next time!");
+            break;
+        }
+        if command.is_empty() {
+            println!("Please enter a command. Empty commands are not accepted");
+            continue;
+        }
         
-    if let Some(value) = node.get("project") {
-        println!("Project = {}", value);
-    } else {
-        println!("Project was not found")
-    }
+        let parts: Vec<&str> = input.trim().split_whitespace().collect();
 
-    println!("Last log index = {}", node.last_log_index());
-    println!("Log: {:?}", node.get_log());
+        let cmd = match parts[0] {
+            "put" => {
+                if parts.len() < 3 {
+                    println!("Usage: put <key> <value>");
+                    continue;
+                }
+
+                command::Command::Put { 
+                    key: parts[1].to_string(), 
+                    value: parts[2].to_string(), 
+                }
+            }
+
+            "get" => {
+                if parts.len() < 2 {
+                    println!("Usage: get <key>");
+                    continue;
+                }
+                command::Command::Get{
+                    key: parts[1].to_string(),
+                }
+            }
+
+            "delete" => {
+                if parts.len() < 2 {
+                    println!("Usage: delete <key>");
+                    continue;
+                }
+                command::Command::Delete { 
+                    key: parts[1].to_string() 
+                }
+            }
+            _ => {
+                println!("Unkown command. Please try again!");
+                continue;
+            }
+        };
+    }
 }

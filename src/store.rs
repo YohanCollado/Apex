@@ -16,6 +16,10 @@ impl Store {
 
     pub fn apply(&mut self, command: Command) -> Result<Option<String>, StoreError> {
         match command {
+            Command::Get { key } => match self.data.get(&key) {
+                Some(value) => Ok(Some(value.clone())),
+                None => Err(StoreError::KeyNotFound(key)),
+            },
             Command::Put { key, value } => Ok(self.data.insert(key, value)),
             Command::Delete{ key } => match self.data.remove(&key) {
                 Some(value) => Ok(Some(value)),
