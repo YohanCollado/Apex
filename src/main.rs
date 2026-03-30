@@ -46,4 +46,5 @@ fn main() {
     }
 
     println!("Last log index = {}", node.last_log_index());
+    println!("Log: {:?}", node.get_log());
 }

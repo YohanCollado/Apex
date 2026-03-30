@@ -2,6 +2,7 @@ use crate::command::Command;
 use crate::error::StoreError;
 use crate::log::ReplicatedLog;
 use crate::store::Store;
+use crate::log::LogEntry;
 
 pub struct ApexNode {
     store: Store,
@@ -31,6 +32,10 @@ impl ApexNode {
 
     pub fn last_log_index(&self) -> u64 {
         self.log.last_index()
+    }
+
+    pub fn get_log(&self) ->&[crate::log::LogEntry] {
+        self.log.entries()
     }
 }
 
