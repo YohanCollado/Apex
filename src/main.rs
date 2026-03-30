@@ -43,7 +43,7 @@ fn main() {
 
                 command::Command::Put { 
                     key: parts[1].to_string(), 
-                    value: parts[2].to_string(), 
+                    value: parts[2..].join(" "), 
                 }
             }
 
@@ -71,5 +71,28 @@ fn main() {
                 continue;
             }
         };
+        
+        match cmd {
+            command::Command::Get { key } => {
+                match node.get(&key) {
+                    Some(value) => println! ("Value: {}", value),
+                    None => println!("Error: KeyNotFound({})", key)
+                }
+            }
+            _ => {
+                match node.apply_command(cmd) {
+                    Ok((index, Some(value))) => {
+                        println!("Log Index: {}", index);
+                        println!("Value: {}", value);
+                    }
+                    Ok((index, None)) => {
+                        println!("Applied successfully at log index {}", index);
+                    }
+                    Err(error) => {
+                        println!("Error: {:?}", error)
+                    }
+                }
+            }
+        }
     }
 }

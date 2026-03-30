@@ -2,7 +2,6 @@ use crate::command::Command;
 use crate::error::StoreError;
 use crate::log::ReplicatedLog;
 use crate::store::Store;
-use crate::log::LogEntry;
 
 pub struct ApexNode {
     store: Store,
@@ -17,12 +16,12 @@ impl ApexNode {
         }
     }
 
-    pub fn apply_command(&mut self, command: Command) -> Result<u64, StoreError> {
+    pub fn apply_command(&mut self, command: Command) -> Result<(u64 , Option<String>), StoreError> {
         let log_index = self.log.append(command.clone());
 
         match self.store.apply(command) {
-            Ok(_) => Ok(log_index),
-            Err(error) => Err(error)
+            Ok(value) => Ok((log_index, value)),
+            Err(error) => Err(error),
         }
     }
 
@@ -34,7 +33,7 @@ impl ApexNode {
         self.log.last_index()
     }
 
-    pub fn get_log(&self) ->&[crate::log::LogEntry] {
+    pub fn get_log(&self) -> & [crate::log::LogEntry] {
         self.log.entries()
     }
 }

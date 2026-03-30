@@ -20,6 +20,7 @@ impl Store {
                 Some(value) => Ok(Some(value.clone())),
                 None => Err(StoreError::KeyNotFound(key)),
             },
+
             Command::Put { key, value } => Ok(self.data.insert(key, value)),
             Command::Delete{ key } => match self.data.remove(&key) {
                 Some(value) => Ok(Some(value)),
